@@ -4,7 +4,7 @@ const gameMode = {
   hardMode: 20,
 };
 
-const gameFieldSize = gameMode.easyMode;
+const gameFieldSize = gameMode.normalMode;
 let countMoves = 0;
 
 function buildFields() {
@@ -24,7 +24,7 @@ function buildFields() {
   <p class='moves__count'>0</p>
   </div>
   </div>
-  `,
+  `
   );
 
   let size;
@@ -64,10 +64,11 @@ function putMines(cellNum) {
     for (let j = 0; j < gameFieldSize; j++) cellMinesAround[i][j] = 0;
   }
 
-  const getRandomCell = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+  const getRandomCell = (min, max) =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
 
   // set bombs on cells
-  for (let i = 0; i < minesCount; i++) {
+  for (let i = 0; i < 1; i++) {
     const cell = getRandomCell(0, minesCount * minesCount - 1);
     if (mines.includes(cell) || cell === cellNum) i--;
     else mines.push(cell);
@@ -124,14 +125,63 @@ function cellClick() {
     cell.style.backgroundPosition = 'center';
   }
 
-  cellDrawCountBombsAround();
+  cellDrawCountBombsAround(cellNum);
 }
-
-function cellDrawCountBombsAround() {
-  const cells = document.querySelectorAll('.cell_');
+let cells;
+function cellDrawCountBombsAround(cellNum) {
+  cells = document.querySelectorAll('.cell_');
   for (let i = 0, cell_i = 0; i < gameFieldSize; i++) {
     for (let j = 0; j < gameFieldSize; j++, cell_i++) {
-      cells[cell_i].textContent = cellMinesAround[i][j];
+      if (cell_i === cellNum) {
+        cells[cell_i].textContent = cellMinesAround[i][j];
+        if (cellMinesAround[i][j] === 0) {
+          // open all zero cell around
+          showZeroAround(cell_i, i, j, 'up');
+          showZeroAround(cell_i, i, j, 'down');
+          showZeroAround(cell_i, i, j, 'right');
+          showZeroAround(cell_i, i, j, 'left');
+        }
+        return;
+      }
+    }
+  }
+}
+
+function showZeroAround(cell_i, i, j, direction) {
+  if (direction === 'up') {
+    if (i - 1 >= 0) {
+      if (cellMinesAround[i - 1][j] === 0) {
+        cells[cell_i - gameFieldSize].textContent = cellMinesAround[i - 1][j];
+        showZeroAround(cell_i - gameFieldSize, i - 1, j, 'up');
+      }
+    }
+  }
+  if (direction === 'down') {
+    if (i + 1 < gameFieldSize) {
+      if (cellMinesAround[i + 1][j] === 0) {
+        cells[cell_i + gameFieldSize].textContent = cellMinesAround[i + 1][j];
+        showZeroAround(cell_i + gameFieldSize, i + 1, j, 'down');
+      }
+    }
+  }
+  if (direction === 'right') {
+    if (j + 1 < gameFieldSize) {
+      if (cellMinesAround[i][j + 1] === 0) {
+        cells[cell_i + 1].textContent = cellMinesAround[i][j + 1];
+        showZeroAround(cell_i + 1, i, j + 1, 'right');
+        if (i - 1 >= 0) showZeroAround(cell_i + 1, i, j + 1, 'up');
+        if (i + 1 < gameFieldSize) showZeroAround(cell_i + 1, i, j + 1, 'down');
+      }
+    }
+  }
+  if (direction === 'left') {
+    if (j - 1 >= 0) {
+      if (cellMinesAround[i][j - 1] === 0) {
+        cells[cell_i - 1].textContent = cellMinesAround[i][j - 1];
+        showZeroAround(cell_i - 1, i, j - 1, 'left');
+        if (i - 1 >= 0) showZeroAround(cell_i - 1, i, j - 1, 'up');
+        if (i + 1 < gameFieldSize) showZeroAround(cell_i - 1, i, j - 1, 'down');
+      }
     }
   }
 }
