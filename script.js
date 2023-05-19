@@ -40,7 +40,7 @@ function buildFields() {
 
   for (let i = 0; i < gameFieldSize * gameFieldSize; i++) {
     const cell = document.createElement('div');
-    cell.classList = `game-field__cell ${i} cell_`;
+    cell.classList = `game-field__cell ${i} cell`;
     cell.addEventListener('click', cellClick);
 
     ceils.appendChild(cell);
@@ -68,7 +68,7 @@ function putMines(cellNum) {
     Math.floor(Math.random() * (max - min + 1)) + min;
 
   // set bombs on cells
-  for (let i = 0; i < 1; i++) {
+  for (let i = 0; i < minesCount; i++) {
     const cell = getRandomCell(0, minesCount * minesCount - 1);
     if (mines.includes(cell) || cell === cellNum) i--;
     else mines.push(cell);
@@ -106,35 +106,44 @@ function putMines(cellNum) {
   console.log(cellMinesAround);
 }
 
+const setActiveCell = (cell) => {
+  cell.classList.add('__active');
+  cell.classList.remove('game-field__cell');
+};
+
 function cellClick() {
-  countMoves++;
   const cell = this;
-  const cellNum = parseInt(cell.classList[1], 10);
-  // eslint-disable-next-line no-console
-  console.log(cellNum);
-  if (isFirstCellClick) {
-    isFirstCellClick = false;
-    putMines(cellNum);
+  if (!cell.classList.contains('__active')) {
+    countMoves++;
+    const cellNum = parseInt(cell.classList[1], 10);
+
+    if (isFirstCellClick) {
+      isFirstCellClick = false;
+      putMines(cellNum);
+    }
+
+    setActiveCell(cell);
+
+    if (mines.includes(cellNum)) {
+      cell.style.backgroundImage = "url('Assets/img/mine.png')";
+      cell.style.backgroundRepeat = 'no-repeat';
+      cell.style.backgroundPosition = 'center';
+    }
+
+    if (mines.includes(cellNum)) return;
+    cellDrawCountBombsAround(cellNum);
   }
-
-  cell.style.background = '#cccccc';
-
-  if (mines.includes(cellNum)) {
-    cell.style.backgroundImage = "url('Assets/img/mine.png')";
-    cell.style.backgroundRepeat = 'no-repeat';
-    cell.style.backgroundPosition = 'center';
-  }
-
-  cellDrawCountBombsAround(cellNum);
 }
+
 let cells;
 function cellDrawCountBombsAround(cellNum) {
-  cells = document.querySelectorAll('.cell_');
+  cells = document.querySelectorAll('.cell');
   for (let i = 0, cell_i = 0; i < gameFieldSize; i++) {
     for (let j = 0; j < gameFieldSize; j++, cell_i++) {
       if (cell_i === cellNum) {
-        cells[cell_i].textContent = cellMinesAround[i][j];
-        if (cellMinesAround[i][j] === 0) {
+        if (cellMinesAround[i][j] !== 0)
+          cells[cell_i].textContent = cellMinesAround[i][j];
+        else {
           // open all zero cell around
           showZeroAround(cell_i, i, j, 'up');
           showZeroAround(cell_i, i, j, 'down');
@@ -151,7 +160,7 @@ function showZeroAround(cell_i, i, j, direction) {
   if (direction === 'up') {
     if (i - 1 >= 0) {
       if (cellMinesAround[i - 1][j] === 0) {
-        cells[cell_i - gameFieldSize].textContent = cellMinesAround[i - 1][j];
+        setActiveCell(cells[cell_i - gameFieldSize]);
         showZeroAround(cell_i - gameFieldSize, i - 1, j, 'up');
       }
     }
@@ -159,7 +168,7 @@ function showZeroAround(cell_i, i, j, direction) {
   if (direction === 'down') {
     if (i + 1 < gameFieldSize) {
       if (cellMinesAround[i + 1][j] === 0) {
-        cells[cell_i + gameFieldSize].textContent = cellMinesAround[i + 1][j];
+        setActiveCell(cells[cell_i + gameFieldSize]);
         showZeroAround(cell_i + gameFieldSize, i + 1, j, 'down');
       }
     }
@@ -167,7 +176,7 @@ function showZeroAround(cell_i, i, j, direction) {
   if (direction === 'right') {
     if (j + 1 < gameFieldSize) {
       if (cellMinesAround[i][j + 1] === 0) {
-        cells[cell_i + 1].textContent = cellMinesAround[i][j + 1];
+        setActiveCell(cells[cell_i + 1]);
         showZeroAround(cell_i + 1, i, j + 1, 'right');
         if (i - 1 >= 0) showZeroAround(cell_i + 1, i, j + 1, 'up');
         if (i + 1 < gameFieldSize) showZeroAround(cell_i + 1, i, j + 1, 'down');
@@ -177,7 +186,7 @@ function showZeroAround(cell_i, i, j, direction) {
   if (direction === 'left') {
     if (j - 1 >= 0) {
       if (cellMinesAround[i][j - 1] === 0) {
-        cells[cell_i - 1].textContent = cellMinesAround[i][j - 1];
+        setActiveCell(cells[cell_i - 1]);
         showZeroAround(cell_i - 1, i, j - 1, 'left');
         if (i - 1 >= 0) showZeroAround(cell_i - 1, i, j - 1, 'up');
         if (i + 1 < gameFieldSize) showZeroAround(cell_i - 1, i, j - 1, 'down');
