@@ -136,6 +136,7 @@ function cellClick() {
 }
 
 let cells;
+let cellsText;
 function cellDrawCountBombsAround(cellNum) {
   cells = document.querySelectorAll('.cell');
   for (let i = 0, cell_i = 0; i < gameFieldSize; i++) {
@@ -145,7 +146,8 @@ function cellDrawCountBombsAround(cellNum) {
           cells[cell_i].textContent = cellMinesAround[i][j];
         else {
           // open all zero cell around
-          showZeroAround(cell_i, i, j, 'up');
+          cellsText = new Array(cells.length);
+          showZeroAround(cell_i, i, j, 'up',);
           showZeroAround(cell_i, i, j, 'down');
           showZeroAround(cell_i, i, j, 'right');
           showZeroAround(cell_i, i, j, 'left');
@@ -157,40 +159,56 @@ function cellDrawCountBombsAround(cellNum) {
 }
 
 function showZeroAround(cell_i, i, j, direction) {
-  if (direction === 'up') {
-    if (i - 1 >= 0) {
-      if (cellMinesAround[i - 1][j] === 0) {
-        setActiveCell(cells[cell_i - gameFieldSize]);
-        showZeroAround(cell_i - gameFieldSize, i - 1, j, 'up');
-      }
+  if (direction === 'up' && i - 1 >= 0) {
+    if (cellMinesAround[i - 1][j] === 0 && cellsText[cell_i - gameFieldSize] !== '0') {
+      setActiveCell(cells[cell_i - gameFieldSize]);
+      cellsText[cell_i - gameFieldSize] = '0';
+      showZeroAround(cell_i - gameFieldSize, i - 1, j, 'up');
+      showZeroAround(cell_i - gameFieldSize, i - 1, j, 'right');
+      showZeroAround(cell_i - gameFieldSize, i - 1, j, 'left');
+    } else if (cellMinesAround[i - 1][j] !== 0 && cells[cell_i - gameFieldSize].textContent === '') {
+      setActiveCell(cells[cell_i - gameFieldSize]);
+      cells[cell_i - gameFieldSize].textContent = cellMinesAround[i - 1][j].toString();
     }
   }
-  if (direction === 'down') {
-    if (i + 1 < gameFieldSize) {
-      if (cellMinesAround[i + 1][j] === 0) {
-        setActiveCell(cells[cell_i + gameFieldSize]);
-        showZeroAround(cell_i + gameFieldSize, i + 1, j, 'down');
-      }
+
+  if (direction === 'down' && i + 1 < gameFieldSize) {
+    if (cellMinesAround[i + 1][j] === 0 && cellsText[cell_i + gameFieldSize] !== '0') {
+      setActiveCell(cells[cell_i + gameFieldSize]);
+      cellsText[cell_i + gameFieldSize] = '0';
+      showZeroAround(cell_i + gameFieldSize, i + 1, j, 'down');
+      showZeroAround(cell_i + gameFieldSize, i + 1, j, 'left');
+      showZeroAround(cell_i + gameFieldSize, i + 1, j, 'right');
+    } else if (cellMinesAround[i + 1][j] !== 0 && cells[cell_i + gameFieldSize].textContent === '') {
+      setActiveCell(cells[cell_i + gameFieldSize]);
+      cells[cell_i + gameFieldSize].textContent = cellMinesAround[i + 1][j].toString();
     }
   }
-  if (direction === 'right') {
-    if (j + 1 < gameFieldSize) {
-      if (cellMinesAround[i][j + 1] === 0) {
-        setActiveCell(cells[cell_i + 1]);
-        showZeroAround(cell_i + 1, i, j + 1, 'right');
-        if (i - 1 >= 0) showZeroAround(cell_i + 1, i, j + 1, 'up');
-        if (i + 1 < gameFieldSize) showZeroAround(cell_i + 1, i, j + 1, 'down');
-      }
+
+  if (direction === 'right' && j + 1 < gameFieldSize) {
+    if (cellMinesAround[i][j + 1] === 0 && cellsText[cell_i + 1] !== '0') {
+      setActiveCell(cells[cell_i + 1]);
+      cellsText[cell_i + 1] = '0';
+      showZeroAround(cell_i + 1, i, j + 1, 'right');
+      showZeroAround(cell_i + 1, i, j + 1, 'up');
+      showZeroAround(cell_i + 1, i, j + 1, 'down');
+    } else if (cellMinesAround[i][j + 1] !== 0 && cells[cell_i + 1].textContent === '') {
+      setActiveCell(cells[cell_i + 1]);
+      cells[cell_i + 1].textContent = cellMinesAround[i][j + 1].toString();
     }
   }
-  if (direction === 'left') {
-    if (j - 1 >= 0) {
-      if (cellMinesAround[i][j - 1] === 0) {
-        setActiveCell(cells[cell_i - 1]);
-        showZeroAround(cell_i - 1, i, j - 1, 'left');
-        if (i - 1 >= 0) showZeroAround(cell_i - 1, i, j - 1, 'up');
-        if (i + 1 < gameFieldSize) showZeroAround(cell_i - 1, i, j - 1, 'down');
-      }
+
+  if (direction === 'left' && j - 1 >= 0) {
+    if (cellMinesAround[i][j - 1] === 0 && cellsText[cell_i - 1] !== '0') {
+      setActiveCell(cells[cell_i - 1]);
+      cellsText[cell_i - 1] = '0';
+      showZeroAround(cell_i - 1, i, j - 1, 'left');
+      showZeroAround(cell_i - 1, i, j - 1, 'up');
+      showZeroAround(cell_i - 1, i, j - 1, 'down');
+    } else if (cellMinesAround[i][j - 1] !== 0 && cells[cell_i - 1].textContent === '') {
+      setActiveCell(cells[cell_i - 1]);
+      cells[cell_i - 1].textContent = cellMinesAround[i][j - 1].toString();
     }
   }
 }
+

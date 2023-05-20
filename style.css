@@ -15,7 +15,7 @@ p {
   display: inline-flex;
   width: 100%;
   justify-content: center;
-  background: #00ff84;;
+  background: #00ff84;
 }
 
 .timer,
@@ -45,7 +45,7 @@ p {
   background: #cccccc;
 }
 
-.game-field__cell {
+.cell {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -59,7 +59,15 @@ p {
   font-weight: 900;
 }
 
+.cell.__active {
+  background: #cccccc;
+}
+
 .game-field__cell:hover {
   background: #c0c0c0;
   cursor: pointer;
+}
+
+.s1 {
+  background: red;
 }
