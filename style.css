@@ -17,7 +17,7 @@ p {
   align-items: center;
   width: 100%;
   height: 150px;
-  background: #c0c0c0;
+  background: #cecece;
 }
 
 .header__items {
@@ -157,4 +157,35 @@ p {
   border-top: 2px solid #4e4e4e;
   border-left: 2px solid #4e4e4e;
   transform: scale(0.95);
+}
+
+.dialog-menu {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  top: 50%;
+  z-index: 1;
+}
+
+.defeat-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #cecece;
+  width: 25%;
+}
+
+.defeat-menu__title,
+.defeat-menu__message,
+.defeat-menu__close-button {
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.defeat-menu__close-button {
+  width: 50%;
+  margin: 10px 0;
+  cursor: pointer;
 }

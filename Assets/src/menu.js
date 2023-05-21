@@ -11,6 +11,7 @@ const gameModeImg = [
 ];
 
 const gameFieldSizeChange = new CustomEvent('gameFieldSizeChange');
+// eslint-disable-next-line import/no-mutable-exports
 export let gameFieldSize;
 let gameFieldSizeIndex;
 
@@ -27,10 +28,14 @@ export function buildMainMenu() {
   if (localStorage.getItem('difficult') === gameMode.easyMode.toString()) {
     gameFieldSize = gameMode.easyMode;
     gameFieldSizeIndex = 0;
-  } else if (localStorage.getItem('difficult') === gameMode.normalMode.toString()) {
+  } else if (
+    localStorage.getItem('difficult') === gameMode.normalMode.toString()
+  ) {
     gameFieldSize = gameMode.normalMode;
     gameFieldSizeIndex = 1;
-  } else if (localStorage.getItem('difficult') === gameMode.hardMode.toString()) {
+  } else if (
+    localStorage.getItem('difficult') === gameMode.hardMode.toString()
+  ) {
     gameFieldSize = gameMode.hardMode;
     gameFieldSizeIndex = 2;
   } else {
@@ -63,4 +68,35 @@ export function buildMainMenu() {
   mainMenuButtons.appendChild(bestScopeButton);
 }
 
-export function buildDefeatMenu() {}
+export function buildDefeatMenu() {
+  const dialog = document.createElement('div');
+  dialog.classList = 'dialog-menu';
+
+  const menu = document.createElement('div');
+  menu.classList = 'defeat-menu';
+
+  const title = document.createElement('h3');
+  title.classList = 'defeat-menu__title';
+  title.textContent = 'Вы проиграли!';
+
+  const message = document.createElement('p');
+  message.classList = 'defeat-menu__message';
+  message.textContent = 'Игра окончена.';
+
+  const closeButton = document.createElement('button');
+  closeButton.classList = 'defeat-menu__close-button';
+  closeButton.textContent = 'Закрыть';
+  closeButton.addEventListener('click', hideLossDialog);
+
+  menu.appendChild(title);
+  menu.appendChild(message);
+  menu.appendChild(closeButton);
+  dialog.append(menu);
+
+  document.body.appendChild(dialog);
+}
+
+function hideLossDialog() {
+  const dialog = document.querySelector('.dialog-menu');
+  if (dialog) dialog.remove();
+}
