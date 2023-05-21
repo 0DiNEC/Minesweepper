@@ -3,9 +3,12 @@ import {
   gameFieldSize,
   gameMode,
   buildDefeatMenu,
+  buildWinMenu,
 } from './menu.js';
 
 let countMoves = 0;
+let flagsCount;
+let flagToWin;
 
 const smileStates = [
   'Assets/img/always.png',
@@ -14,7 +17,7 @@ const smileStates = [
 ];
 
 let isMouseDown = false;
-let isLoose = false;
+let isGameOver = false;
 
 function buildFields() {
   const gameField = document.createElement('section');
@@ -40,11 +43,13 @@ function buildFields() {
   const smileButton = document.createElement('button');
   smileButton.classList = 'smile-btn';
   smileButton.style.backgroundImage = `url('${smileStates[0]}')`;
+  smileButton.addEventListener('click', rebuildGameZone);
   sectionInfo.appendChild(smileButton);
 
+  flagToWin = (gameFieldSize * gameFieldSize) / 10;
   const countFlags = document.createElement('div');
   countFlags.classList = 'count-flags';
-  countFlags.textContent = '0';
+  countFlags.textContent = flagToWin.toString();
   sectionInfo.appendChild(countFlags);
 
   const timer = document.createElement('div');
@@ -69,24 +74,44 @@ function buildFields() {
     cell.addEventListener('click', cellClick);
     // eslint-disable-next-line no-loop-func
     cell.addEventListener('contextmenu', (event) => {
-      event.preventDefault();
       const { target } = event;
-      if (!isLoose) {
+      if (!isGameOver) {
         if (!target.classList.contains('__active')) {
           const cellNum = parseInt(target.classList[1], 10);
+          if (isFirstCellClick) {
+            isFirstCellClick = false;
+            putMines(cellNum);
+            startTimer();
+          }
           target.classList.toggle('flag');
           if (target.classList.contains('flag')) {
+            flagsCount--;
+            if (mines.includes(cellNum))
+              flagToWin--;
+            target.classList.remove('game-field__cell');
             target.style.backgroundImage = "url('Assets/img/flag.png')";
             target.style.backgroundRepeat = 'no-repeat';
             target.style.backgroundPosition = 'center';
             target.style.backgroundSize = 'cover';
-          } else target.style.backgroundImage = 'none';
+            if (flagToWin === 0) {
+              buildWinMenu(seconds, countMoves);
+              isGameOver = false;
+              stopTimer();
+            }
+          } else {
+            flagsCount++;
+            if (mines.includes(cellNum))
+              flagToWin++;
+            target.classList.add('game-field__cell');
+            target.style.backgroundImage = 'none';
+          }
+          countFlags.textContent = flagsCount;
         }
       }
     });
     // eslint-disable-next-line no-loop-func
     cell.addEventListener('mousedown', () => {
-      if (!cell.classList.contains('__active') && !isLoose) {
+      if (!cell.classList.contains('__active') && !isGameOver) {
         smileButton.style.backgroundImage = `url('${smileStates[1]}')`;
         isMouseDown = true;
       }
@@ -110,11 +135,13 @@ function buildFields() {
 // put mines on cells in the game zone
 let mines;
 let cellMinesAround;
+let minesCount;
 let isFirstCellClick = true;
 function putMines(cellNum) {
   // create mines array
   mines = [];
-  const minesCount = Math.floor((gameFieldSize * gameFieldSize) / 10);
+  minesCount = Math.floor((gameFieldSize * gameFieldSize) / 10);
+  flagsCount = minesCount;
   cellMinesAround = [];
 
   // fill all cells with zero bombs around
@@ -185,7 +212,7 @@ const setActiveCell = (cell) => {
 };
 
 function cellClick() {
-  if (!isLoose) {
+  if (!isGameOver) {
     const cell = this;
     if (
       !cell.classList.contains('__active')
@@ -213,7 +240,7 @@ function cellClick() {
       if (mines.includes(cellNum)) {
         buildDefeatMenu();
         stopTimer(true);
-        isLoose = true;
+        isGameOver = true;
         return;
       }
       cellDrawCountBombsAround(cellNum);
@@ -349,7 +376,7 @@ function rebuildGameZone() {
   const gameField = document.querySelector('.game-field');
   gameField.remove();
   isFirstCellClick = true;
-  isLoose = false;
+  isGameOver = false;
   stopTimer();
   buildFields();
 }
@@ -357,6 +384,10 @@ function rebuildGameZone() {
 // if gameFieldSize will change
 document.addEventListener('gameFieldSizeChange', () => {
   rebuildGameZone();
+});
+
+document.addEventListener('contextmenu', (event) => {
+  event.preventDefault();
 });
 
 function main() {

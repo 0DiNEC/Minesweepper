@@ -68,24 +68,54 @@ export function buildMainMenu() {
   mainMenuButtons.appendChild(bestScopeButton);
 }
 
+// Defeat menu
 export function buildDefeatMenu() {
   const dialog = document.createElement('div');
-  dialog.classList = 'dialog-menu';
+  dialog.classList = 'dialog';
 
   const menu = document.createElement('div');
-  menu.classList = 'defeat-menu';
+  menu.classList = 'dialog__defeat';
 
   const title = document.createElement('h3');
-  title.classList = 'defeat-menu__title';
-  title.textContent = 'Вы проиграли!';
+  title.classList = 'dialog_title';
+  title.textContent = 'GAME OVER!';
 
   const message = document.createElement('p');
-  message.classList = 'defeat-menu__message';
-  message.textContent = 'Игра окончена.';
+  message.classList = 'dialog__message';
+  message.textContent = 'try again';
 
   const closeButton = document.createElement('button');
-  closeButton.classList = 'defeat-menu__close-button';
-  closeButton.textContent = 'Закрыть';
+  closeButton.classList = 'dialog__close-button';
+  closeButton.textContent = 'close';
+  closeButton.addEventListener('click', hideLossDialog);
+
+  menu.appendChild(title);
+  menu.appendChild(message);
+  menu.appendChild(closeButton);
+  dialog.append(menu);
+
+  document.body.appendChild(dialog);
+}
+
+// Win menu
+export function buildWinMenu(time, moves) {
+  const dialog = document.createElement('div');
+  dialog.classList = 'dialog';
+
+  const menu = document.createElement('div');
+  menu.classList = 'dialog__win';
+
+  const title = document.createElement('h3');
+  title.classList = 'dialog_title';
+  title.textContent = 'YOU WIN!';
+
+  const message = document.createElement('p');
+  message.classList = 'dialog__message';
+  message.textContent = `YOUR RESULT TIME ${time} MOVES ${moves}`;
+
+  const closeButton = document.createElement('button');
+  closeButton.classList = 'dialog__close-button';
+  closeButton.textContent = 'close';
   closeButton.addEventListener('click', hideLossDialog);
 
   menu.appendChild(title);
@@ -97,6 +127,6 @@ export function buildDefeatMenu() {
 }
 
 function hideLossDialog() {
-  const dialog = document.querySelector('.dialog-menu');
+  const dialog = document.querySelector('.dialog');
   if (dialog) dialog.remove();
 }
