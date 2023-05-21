@@ -84,7 +84,7 @@ function putMines(cellNum) {
 
   // set bombs on cells
   for (let i = 0; i < minesCount; i++) {
-    const cell = getRandomCell(0, minesCount * minesCount - 1);
+    const cell = getRandomCell(0, gameFieldSize * gameFieldSize - 1);
     if (mines.includes(cell) || cell === cellNum) i--;
     else mines.push(cell);
   }
@@ -140,12 +140,25 @@ function cellClick() {
       cell.style.backgroundImage = "url('Assets/img/mine.png')";
       cell.style.backgroundRepeat = 'no-repeat';
       cell.style.backgroundPosition = 'center';
+      cell.style.backgroundSize = 'cover';
     }
 
     if (mines.includes(cellNum)) return;
     cellDrawCountBombsAround(cellNum);
   }
 }
+
+const drawMinesAroundRGB = (cell, count) => {
+  const cellNow = cell;
+  if (count === 1) cellNow.style.color = 'blue';
+  else if (count === 2) cellNow.style.color = 'green';
+  else if (count === 3) cellNow.style.color = 'red';
+  else if (count === 4) cellNow.style.color = 'darkblue';
+  else if (count === 5) cellNow.style.color = 'brown';
+  else if (count === 6) cellNow.style.color = 'darkgreen';
+  else if (count === 7) cellNow.style.color = 'black';
+  else if (count === 8) cellNow.style.color = 'gray';
+};
 
 let cells;
 let cellsText;
@@ -154,9 +167,10 @@ function cellDrawCountBombsAround(cellNum) {
   for (let i = 0, cell_i = 0; i < gameFieldSize; i++) {
     for (let j = 0; j < gameFieldSize; j++, cell_i++) {
       if (cell_i === cellNum) {
-        if (cellMinesAround[i][j] !== 0)
+        if (cellMinesAround[i][j] !== 0) {
           cells[cell_i].textContent = cellMinesAround[i][j];
-        else {
+          drawMinesAroundRGB(cells[cell_i], cellMinesAround[i][j]);
+        } else {
           // open all zero cell around
           cellsText = new Array(cells.length);
           showZeroAround(cell_i, i, j, 'up');
@@ -173,8 +187,8 @@ function cellDrawCountBombsAround(cellNum) {
 function showZeroAround(cell_i, i, j, direction) {
   if (direction === 'up' && i - 1 >= 0) {
     if (
-      cellMinesAround[i - 1][j] === 0 &&
-      cellsText[cell_i - gameFieldSize] !== '0'
+      cellMinesAround[i - 1][j] === 0
+      && cellsText[cell_i - gameFieldSize] !== '0'
     ) {
       setActiveCell(cells[cell_i - gameFieldSize]);
       cellsText[cell_i - gameFieldSize] = '0';
@@ -182,19 +196,19 @@ function showZeroAround(cell_i, i, j, direction) {
       showZeroAround(cell_i - gameFieldSize, i - 1, j, 'right');
       showZeroAround(cell_i - gameFieldSize, i - 1, j, 'left');
     } else if (
-      cellMinesAround[i - 1][j] !== 0 &&
-      cells[cell_i - gameFieldSize].textContent === ''
+      cellMinesAround[i - 1][j] !== 0
+      && cells[cell_i - gameFieldSize].textContent === ''
     ) {
       setActiveCell(cells[cell_i - gameFieldSize]);
-      cells[cell_i - gameFieldSize].textContent =
-        cellMinesAround[i - 1][j].toString();
+      cells[cell_i - gameFieldSize].textContent = cellMinesAround[i - 1][j].toString();
+      drawMinesAroundRGB(cells[cell_i - gameFieldSize], cellMinesAround[i - 1][j]);
     }
   }
 
   if (direction === 'down' && i + 1 < gameFieldSize) {
     if (
-      cellMinesAround[i + 1][j] === 0 &&
-      cellsText[cell_i + gameFieldSize] !== '0'
+      cellMinesAround[i + 1][j] === 0
+      && cellsText[cell_i + gameFieldSize] !== '0'
     ) {
       setActiveCell(cells[cell_i + gameFieldSize]);
       cellsText[cell_i + gameFieldSize] = '0';
@@ -202,12 +216,12 @@ function showZeroAround(cell_i, i, j, direction) {
       showZeroAround(cell_i + gameFieldSize, i + 1, j, 'left');
       showZeroAround(cell_i + gameFieldSize, i + 1, j, 'right');
     } else if (
-      cellMinesAround[i + 1][j] !== 0 &&
-      cells[cell_i + gameFieldSize].textContent === ''
+      cellMinesAround[i + 1][j] !== 0
+      && cells[cell_i + gameFieldSize].textContent === ''
     ) {
       setActiveCell(cells[cell_i + gameFieldSize]);
-      cells[cell_i + gameFieldSize].textContent =
-        cellMinesAround[i + 1][j].toString();
+      cells[cell_i + gameFieldSize].textContent = cellMinesAround[i + 1][j].toString();
+      drawMinesAroundRGB(cells[cell_i + gameFieldSize], cellMinesAround[i + 1][j]);
     }
   }
 
@@ -219,11 +233,12 @@ function showZeroAround(cell_i, i, j, direction) {
       showZeroAround(cell_i + 1, i, j + 1, 'up');
       showZeroAround(cell_i + 1, i, j + 1, 'down');
     } else if (
-      cellMinesAround[i][j + 1] !== 0 &&
-      cells[cell_i + 1].textContent === ''
+      cellMinesAround[i][j + 1] !== 0
+      && cells[cell_i + 1].textContent === ''
     ) {
       setActiveCell(cells[cell_i + 1]);
       cells[cell_i + 1].textContent = cellMinesAround[i][j + 1].toString();
+      drawMinesAroundRGB(cells[cell_i + 1], cellMinesAround[i][j + 1]);
     }
   }
 
@@ -235,11 +250,12 @@ function showZeroAround(cell_i, i, j, direction) {
       showZeroAround(cell_i - 1, i, j - 1, 'up');
       showZeroAround(cell_i - 1, i, j - 1, 'down');
     } else if (
-      cellMinesAround[i][j - 1] !== 0 &&
-      cells[cell_i - 1].textContent === ''
+      cellMinesAround[i][j - 1] !== 0
+      && cells[cell_i - 1].textContent === ''
     ) {
       setActiveCell(cells[cell_i - 1]);
       cells[cell_i - 1].textContent = cellMinesAround[i][j - 1].toString();
+      drawMinesAroundRGB(cells[cell_i - 1], cellMinesAround[i][j - 1]);
     }
   }
 }
@@ -247,6 +263,7 @@ function showZeroAround(cell_i, i, j, direction) {
 function rebuildGameZone() {
   const gameField = document.querySelector('.game-field');
   gameField.remove();
+  isFirstCellClick = true;
   buildFields();
 }
 
