@@ -1,4 +1,9 @@
-import { buildMainMenu, gameFieldSize, gameMode } from './menu.js';
+import {
+  buildMainMenu,
+  gameFieldSize,
+  gameMode,
+  buildDefeatMenu,
+} from './menu.js';
 
 let countMoves = 0;
 
@@ -7,6 +12,9 @@ const smileStates = [
   'Assets/img/click.png',
   'Assets/img/dead.png',
 ];
+
+let isMouseDown = false;
+let isLoose = false;
 
 function buildFields() {
   const gameField = document.createElement('section');
@@ -20,10 +28,10 @@ function buildFields() {
   headerItems.classList = 'header__items';
   header.appendChild(headerItems);
 
-  const timer = document.createElement('div');
-  timer.classList = 'timer';
-  timer.textContent = '0';
-  headerItems.appendChild(timer);
+  const moves = document.createElement('div');
+  moves.classList = 'moves';
+  moves.textContent = '0';
+  headerItems.appendChild(moves);
 
   const sectionInfo = document.createElement('section');
   sectionInfo.classList = 'section-info';
@@ -39,10 +47,10 @@ function buildFields() {
   countFlags.textContent = '0';
   sectionInfo.appendChild(countFlags);
 
-  const moves = document.createElement('div');
-  moves.classList = 'moves';
-  moves.textContent = '0';
-  headerItems.appendChild(moves);
+  const timer = document.createElement('div');
+  timer.classList = 'timer';
+  timer.textContent = '0';
+  headerItems.appendChild(timer);
 
   let size;
   if (gameFieldSize === gameMode.easyMode) size = 3.2;
@@ -59,7 +67,42 @@ function buildFields() {
     const cell = document.createElement('div');
     cell.classList = `game-field__cell ${i} cell`;
     cell.addEventListener('click', cellClick);
-
+    // eslint-disable-next-line no-loop-func
+    cell.addEventListener('contextmenu', (event) => {
+      event.preventDefault();
+      const { target } = event;
+      if (!isLoose) {
+        if (!target.classList.contains('__active')) {
+          const cellNum = parseInt(target.classList[1], 10);
+          target.classList.toggle('flag');
+          if (target.classList.contains('flag')) {
+            target.style.backgroundImage = "url('Assets/img/flag.png')";
+            target.style.backgroundRepeat = 'no-repeat';
+            target.style.backgroundPosition = 'center';
+            target.style.backgroundSize = 'cover';
+          } else target.style.backgroundImage = 'none';
+        }
+      }
+    });
+    // eslint-disable-next-line no-loop-func
+    cell.addEventListener('mousedown', () => {
+      if (!cell.classList.contains('__active') && !isLoose) {
+        smileButton.style.backgroundImage = `url('${smileStates[1]}')`;
+        isMouseDown = true;
+      }
+    });
+    // eslint-disable-next-line no-loop-func
+    cell.addEventListener('mouseup', () => {
+      smileButton.style.backgroundImage = `url('${smileStates[0]}')`;
+      isMouseDown = false;
+    });
+    // eslint-disable-next-line no-loop-func
+    cell.addEventListener('mouseleave', () => {
+      if (isMouseDown) {
+        smileButton.style.backgroundImage = `url('${smileStates[0]}')`;
+        isMouseDown = false;
+      }
+    });
     ceils.appendChild(cell);
   }
 }
@@ -118,33 +161,63 @@ function putMines(cellNum) {
   }
 }
 
+let intervalID;
+let seconds = 0;
+
+function startTimer() {
+  stopTimer();
+  intervalID = setInterval(updateTimer, 1000);
+}
+
+function stopTimer(isClear = false) {
+  if (isClear) seconds = 0;
+  clearInterval(intervalID);
+}
+
+function updateTimer() {
+  seconds++;
+  document.querySelector('.timer').textContent = seconds.toString();
+}
+
 const setActiveCell = (cell) => {
   cell.classList.add('__active');
   cell.classList.remove('game-field__cell');
 };
 
 function cellClick() {
-  const cell = this;
-  if (!cell.classList.contains('__active')) {
-    countMoves++;
-    const cellNum = parseInt(cell.classList[1], 10);
+  if (!isLoose) {
+    const cell = this;
+    if (
+      !cell.classList.contains('__active')
+      && !cell.classList.contains('flag')
+    ) {
+      countMoves++;
+      document.querySelector('.moves').textContent = countMoves.toString();
+      const cellNum = parseInt(cell.classList[1], 10);
 
-    if (isFirstCellClick) {
-      isFirstCellClick = false;
-      putMines(cellNum);
+      if (isFirstCellClick) {
+        isFirstCellClick = false;
+        putMines(cellNum);
+        startTimer();
+      }
+
+      setActiveCell(cell);
+
+      if (mines.includes(cellNum)) {
+        cell.style.backgroundImage = "url('Assets/img/mine.png')";
+        cell.style.backgroundRepeat = 'no-repeat';
+        cell.style.backgroundPosition = 'center';
+        cell.style.backgroundSize = 'cover';
+      }
+
+      if (mines.includes(cellNum)) {
+        buildDefeatMenu();
+        stopTimer(true);
+        isLoose = true;
+        return;
+      }
+      cellDrawCountBombsAround(cellNum);
     }
-
-    setActiveCell(cell);
-
-    if (mines.includes(cellNum)) {
-      cell.style.backgroundImage = "url('Assets/img/mine.png')";
-      cell.style.backgroundRepeat = 'no-repeat';
-      cell.style.backgroundPosition = 'center';
-      cell.style.backgroundSize = 'cover';
-    }
-
-    if (mines.includes(cellNum)) return;
-    cellDrawCountBombsAround(cellNum);
   }
 }
 
@@ -189,6 +262,7 @@ function showZeroAround(cell_i, i, j, direction) {
     if (
       cellMinesAround[i - 1][j] === 0
       && cellsText[cell_i - gameFieldSize] !== '0'
+      && !cells[cell_i - gameFieldSize].classList.contains('flag')
     ) {
       setActiveCell(cells[cell_i - gameFieldSize]);
       cellsText[cell_i - gameFieldSize] = '0';
@@ -198,10 +272,14 @@ function showZeroAround(cell_i, i, j, direction) {
     } else if (
       cellMinesAround[i - 1][j] !== 0
       && cells[cell_i - gameFieldSize].textContent === ''
+      && !cells[cell_i - gameFieldSize].classList.contains('flag')
     ) {
       setActiveCell(cells[cell_i - gameFieldSize]);
       cells[cell_i - gameFieldSize].textContent = cellMinesAround[i - 1][j].toString();
-      drawMinesAroundRGB(cells[cell_i - gameFieldSize], cellMinesAround[i - 1][j]);
+      drawMinesAroundRGB(
+        cells[cell_i - gameFieldSize],
+        cellMinesAround[i - 1][j]
+      );
     }
   }
 
@@ -209,6 +287,7 @@ function showZeroAround(cell_i, i, j, direction) {
     if (
       cellMinesAround[i + 1][j] === 0
       && cellsText[cell_i + gameFieldSize] !== '0'
+      && !cells[cell_i + gameFieldSize].classList.contains('flag')
     ) {
       setActiveCell(cells[cell_i + gameFieldSize]);
       cellsText[cell_i + gameFieldSize] = '0';
@@ -218,15 +297,19 @@ function showZeroAround(cell_i, i, j, direction) {
     } else if (
       cellMinesAround[i + 1][j] !== 0
       && cells[cell_i + gameFieldSize].textContent === ''
+      && !cells[cell_i + gameFieldSize].classList.contains('flag')
     ) {
       setActiveCell(cells[cell_i + gameFieldSize]);
       cells[cell_i + gameFieldSize].textContent = cellMinesAround[i + 1][j].toString();
-      drawMinesAroundRGB(cells[cell_i + gameFieldSize], cellMinesAround[i + 1][j]);
+      drawMinesAroundRGB(
+        cells[cell_i + gameFieldSize],
+        cellMinesAround[i + 1][j]
+      );
     }
   }
 
   if (direction === 'right' && j + 1 < gameFieldSize) {
-    if (cellMinesAround[i][j + 1] === 0 && cellsText[cell_i + 1] !== '0') {
+    if (cellMinesAround[i][j + 1] === 0 && cellsText[cell_i + 1] !== '0' && !cells[cell_i + 1].classList.contains('flag')) {
       setActiveCell(cells[cell_i + 1]);
       cellsText[cell_i + 1] = '0';
       showZeroAround(cell_i + 1, i, j + 1, 'right');
@@ -235,6 +318,7 @@ function showZeroAround(cell_i, i, j, direction) {
     } else if (
       cellMinesAround[i][j + 1] !== 0
       && cells[cell_i + 1].textContent === ''
+      && !cells[cell_i + 1].classList.contains('flag')
     ) {
       setActiveCell(cells[cell_i + 1]);
       cells[cell_i + 1].textContent = cellMinesAround[i][j + 1].toString();
@@ -243,7 +327,7 @@ function showZeroAround(cell_i, i, j, direction) {
   }
 
   if (direction === 'left' && j - 1 >= 0) {
-    if (cellMinesAround[i][j - 1] === 0 && cellsText[cell_i - 1] !== '0') {
+    if (cellMinesAround[i][j - 1] === 0 && cellsText[cell_i - 1] !== '0' && !cells[cell_i - 1].classList.contains('flag')) {
       setActiveCell(cells[cell_i - 1]);
       cellsText[cell_i - 1] = '0';
       showZeroAround(cell_i - 1, i, j - 1, 'left');
@@ -252,6 +336,7 @@ function showZeroAround(cell_i, i, j, direction) {
     } else if (
       cellMinesAround[i][j - 1] !== 0
       && cells[cell_i - 1].textContent === ''
+      && !cells[cell_i - 1].classList.contains('flag')
     ) {
       setActiveCell(cells[cell_i - 1]);
       cells[cell_i - 1].textContent = cellMinesAround[i][j - 1].toString();
@@ -264,6 +349,8 @@ function rebuildGameZone() {
   const gameField = document.querySelector('.game-field');
   gameField.remove();
   isFirstCellClick = true;
+  isLoose = false;
+  stopTimer();
   buildFields();
 }
 
