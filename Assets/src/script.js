@@ -1,41 +1,58 @@
-const gameMode = {
-  easyMode: 5,
-  normalMode: 10,
-  hardMode: 20,
-};
+import { buildMainMenu, gameFieldSize, gameMode } from './menu.js';
 
-const gameFieldSize = gameMode.normalMode;
 let countMoves = 0;
+
+const smileStates = [
+  'Assets/img/always.png',
+  'Assets/img/click.png',
+  'Assets/img/dead.png',
+];
 
 function buildFields() {
   const gameField = document.createElement('section');
   gameField.classList = 'game-field';
   document.body.appendChild(gameField);
-  gameField.insertAdjacentHTML(
-    'afterbegin',
-    `
-  <div class='game-field__header'>
-  <div class='timer'>
-  <p class='timer__title'>time</p>
-  <p class='timer__time'>0:00</p>
-  </div>
-  <div class='moves'>
-  <p class='moves__title'>moves</p>
-  <p class='moves__count'>0</p>
-  </div>
-  </div>
-  `
-  );
+  const header = document.createElement('div');
+  header.classList = 'game-field__header';
+  gameField.appendChild(header);
+
+  const headerItems = document.createElement('div');
+  headerItems.classList = 'header__items';
+  header.appendChild(headerItems);
+
+  const timer = document.createElement('div');
+  timer.classList = 'timer';
+  timer.textContent = '0';
+  headerItems.appendChild(timer);
+
+  const sectionInfo = document.createElement('section');
+  sectionInfo.classList = 'section-info';
+  headerItems.appendChild(sectionInfo);
+
+  const smileButton = document.createElement('button');
+  smileButton.classList = 'smile-btn';
+  smileButton.style.backgroundImage = `url('${smileStates[0]}')`;
+  sectionInfo.appendChild(smileButton);
+
+  const countFlags = document.createElement('div');
+  countFlags.classList = 'count-flags';
+  countFlags.textContent = '0';
+  sectionInfo.appendChild(countFlags);
+
+  const moves = document.createElement('div');
+  moves.classList = 'moves';
+  moves.textContent = '0';
+  headerItems.appendChild(moves);
 
   let size;
-  if (gameFieldSize === gameMode.easyMode) size = 15;
-  else if (gameFieldSize === gameMode.normalMode) size = 8;
-  else size = 4.5;
+  if (gameFieldSize === gameMode.easyMode) size = 3.2;
+  else if (gameFieldSize === gameMode.normalMode) size = 2;
+  else size = 1.07;
 
   const ceils = document.createElement('div');
   ceils.classList = 'game-field__ceils';
-  ceils.style.gridTemplateColumns = `repeat(${gameFieldSize}, ${size}vh)`;
-  ceils.style.gridAutoRows = `${size}vh`;
+  ceils.style.gridTemplateColumns = `repeat(${gameFieldSize}, ${size}rem)`;
+  ceils.style.gridAutoRows = `${size}rem`;
   gameField.appendChild(ceils);
 
   for (let i = 0; i < gameFieldSize * gameFieldSize; i++) {
@@ -46,7 +63,6 @@ function buildFields() {
     ceils.appendChild(cell);
   }
 }
-buildFields();
 
 // put mines on cells in the game zone
 let mines;
@@ -55,7 +71,7 @@ let isFirstCellClick = true;
 function putMines(cellNum) {
   // create mines array
   mines = [];
-  const minesCount = gameFieldSize;
+  const minesCount = Math.floor((gameFieldSize * gameFieldSize) / 10);
   cellMinesAround = [];
 
   // fill all cells with zero bombs around
@@ -64,8 +80,7 @@ function putMines(cellNum) {
     for (let j = 0; j < gameFieldSize; j++) cellMinesAround[i][j] = 0;
   }
 
-  const getRandomCell = (min, max) =>
-    Math.floor(Math.random() * (max - min + 1)) + min;
+  const getRandomCell = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
   // set bombs on cells
   for (let i = 0; i < minesCount; i++) {
@@ -101,9 +116,6 @@ function putMines(cellNum) {
       }
     }
   }
-
-  // eslint-disable-next-line no-console
-  console.log(cellMinesAround);
 }
 
 const setActiveCell = (cell) => {
@@ -147,7 +159,7 @@ function cellDrawCountBombsAround(cellNum) {
         else {
           // open all zero cell around
           cellsText = new Array(cells.length);
-          showZeroAround(cell_i, i, j, 'up',);
+          showZeroAround(cell_i, i, j, 'up');
           showZeroAround(cell_i, i, j, 'down');
           showZeroAround(cell_i, i, j, 'right');
           showZeroAround(cell_i, i, j, 'left');
@@ -160,28 +172,42 @@ function cellDrawCountBombsAround(cellNum) {
 
 function showZeroAround(cell_i, i, j, direction) {
   if (direction === 'up' && i - 1 >= 0) {
-    if (cellMinesAround[i - 1][j] === 0 && cellsText[cell_i - gameFieldSize] !== '0') {
+    if (
+      cellMinesAround[i - 1][j] === 0 &&
+      cellsText[cell_i - gameFieldSize] !== '0'
+    ) {
       setActiveCell(cells[cell_i - gameFieldSize]);
       cellsText[cell_i - gameFieldSize] = '0';
       showZeroAround(cell_i - gameFieldSize, i - 1, j, 'up');
       showZeroAround(cell_i - gameFieldSize, i - 1, j, 'right');
       showZeroAround(cell_i - gameFieldSize, i - 1, j, 'left');
-    } else if (cellMinesAround[i - 1][j] !== 0 && cells[cell_i - gameFieldSize].textContent === '') {
+    } else if (
+      cellMinesAround[i - 1][j] !== 0 &&
+      cells[cell_i - gameFieldSize].textContent === ''
+    ) {
       setActiveCell(cells[cell_i - gameFieldSize]);
-      cells[cell_i - gameFieldSize].textContent = cellMinesAround[i - 1][j].toString();
+      cells[cell_i - gameFieldSize].textContent =
+        cellMinesAround[i - 1][j].toString();
     }
   }
 
   if (direction === 'down' && i + 1 < gameFieldSize) {
-    if (cellMinesAround[i + 1][j] === 0 && cellsText[cell_i + gameFieldSize] !== '0') {
+    if (
+      cellMinesAround[i + 1][j] === 0 &&
+      cellsText[cell_i + gameFieldSize] !== '0'
+    ) {
       setActiveCell(cells[cell_i + gameFieldSize]);
       cellsText[cell_i + gameFieldSize] = '0';
       showZeroAround(cell_i + gameFieldSize, i + 1, j, 'down');
       showZeroAround(cell_i + gameFieldSize, i + 1, j, 'left');
       showZeroAround(cell_i + gameFieldSize, i + 1, j, 'right');
-    } else if (cellMinesAround[i + 1][j] !== 0 && cells[cell_i + gameFieldSize].textContent === '') {
+    } else if (
+      cellMinesAround[i + 1][j] !== 0 &&
+      cells[cell_i + gameFieldSize].textContent === ''
+    ) {
       setActiveCell(cells[cell_i + gameFieldSize]);
-      cells[cell_i + gameFieldSize].textContent = cellMinesAround[i + 1][j].toString();
+      cells[cell_i + gameFieldSize].textContent =
+        cellMinesAround[i + 1][j].toString();
     }
   }
 
@@ -192,7 +218,10 @@ function showZeroAround(cell_i, i, j, direction) {
       showZeroAround(cell_i + 1, i, j + 1, 'right');
       showZeroAround(cell_i + 1, i, j + 1, 'up');
       showZeroAround(cell_i + 1, i, j + 1, 'down');
-    } else if (cellMinesAround[i][j + 1] !== 0 && cells[cell_i + 1].textContent === '') {
+    } else if (
+      cellMinesAround[i][j + 1] !== 0 &&
+      cells[cell_i + 1].textContent === ''
+    ) {
       setActiveCell(cells[cell_i + 1]);
       cells[cell_i + 1].textContent = cellMinesAround[i][j + 1].toString();
     }
@@ -205,10 +234,29 @@ function showZeroAround(cell_i, i, j, direction) {
       showZeroAround(cell_i - 1, i, j - 1, 'left');
       showZeroAround(cell_i - 1, i, j - 1, 'up');
       showZeroAround(cell_i - 1, i, j - 1, 'down');
-    } else if (cellMinesAround[i][j - 1] !== 0 && cells[cell_i - 1].textContent === '') {
+    } else if (
+      cellMinesAround[i][j - 1] !== 0 &&
+      cells[cell_i - 1].textContent === ''
+    ) {
       setActiveCell(cells[cell_i - 1]);
       cells[cell_i - 1].textContent = cellMinesAround[i][j - 1].toString();
     }
   }
 }
 
+function rebuildGameZone() {
+  const gameField = document.querySelector('.game-field');
+  gameField.remove();
+  buildFields();
+}
+
+// if gameFieldSize will change
+document.addEventListener('gameFieldSizeChange', () => {
+  rebuildGameZone();
+});
+
+function main() {
+  buildMainMenu();
+  buildFields();
+}
+main();
