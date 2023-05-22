@@ -5,6 +5,14 @@ p {
   padding: 0;
 }
 
+body {
+  background: #cecece;
+}
+
+.body_night {
+  background: #222222;
+}
+
 .game-field {
   display: block;
   margin: 0 auto;
@@ -36,11 +44,17 @@ p {
 .smile-btn {
   width: 60px;
   height: 60px;
+  background: #cecece;
   background-size: contain;
   border: none;
 
   transition: 0.3s ease;
   cursor: pointer;
+}
+
+.smile-btn_night {
+  background: #222222;
+  background-size: contain;
 }
 
 .count-flags {
@@ -87,7 +101,7 @@ p {
   justify-content: center;
   align-content: center;
   width: 100%;
-  background: #cccccc;
+  background: #cecece;
 }
 
 .cell {
@@ -130,6 +144,11 @@ p {
   border: 3px outset #f0f0f0;
   background: #adadad;
   transition: 0.3s ease;
+}
+
+.main-menu_night {
+  background: #2d2d2d;
+  border: 3px outset #5f5f5f;
 }
 
 .main-menu__buttons {
@@ -192,7 +211,7 @@ p {
 
 .dialog__close-button {
   width: 50%;
-  margin: 10px 0;
+  margin: 20px 0;
   cursor: pointer;
 }
 
@@ -235,4 +254,17 @@ p {
 
 .result__difficult {
   height: 20px;
+}
+
+.game-field_night {
+  background: #222222;
+}
+
+.game-field-cell_night {
+  background: #686868;
+}
+
+.dialog_night {
+  background: #686868;
+  color: #000000;
 }

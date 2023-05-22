@@ -4,7 +4,8 @@ import {
   gameMode,
   buildDefeatMenu,
   buildWinMenu,
-  saveTempResult
+  saveTempResult,
+  isDark
 } from './menu.js';
 
 let countMoves = 0;
@@ -26,6 +27,8 @@ function buildFields() {
   document.body.appendChild(gameField);
   const header = document.createElement('div');
   header.classList = 'game-field__header';
+  if (isDark)
+    header.classList.add('game-field_night');
   gameField.appendChild(header);
 
   const headerItems = document.createElement('div');
@@ -43,6 +46,7 @@ function buildFields() {
 
   const smileButton = document.createElement('button');
   smileButton.classList = 'smile-btn';
+  if (isDark) smileButton.classList.add('smile-btn_night');
   smileButton.style.backgroundImage = `url('${smileStates[0]}')`;
   smileButton.addEventListener('click', rebuildGameZone);
   sectionInfo.appendChild(smileButton);
@@ -67,11 +71,16 @@ function buildFields() {
   ceils.classList = 'game-field__ceils';
   ceils.style.gridTemplateColumns = `repeat(${gameFieldSize}, ${size}rem)`;
   ceils.style.gridAutoRows = `${size}rem`;
+  if (isDark)
+    ceils.classList.add('game-field_night');
   gameField.appendChild(ceils);
 
   for (let i = 0; i < gameFieldSize * gameFieldSize; i++) {
     const cell = document.createElement('div');
     cell.classList = `game-field__cell ${i} cell`;
+    if (isDark)
+      cell.classList.add('game-field-cell_night');
+
     cell.addEventListener('click', cellClick);
     // eslint-disable-next-line no-loop-func
     cell.addEventListener('contextmenu', (event) => {
@@ -98,7 +107,7 @@ function buildFields() {
               const victory = new Audio('assets/sounds/victory.ogg');
               buildWinMenu(seconds, countMoves);
               saveTempResult(seconds, countMoves);
-              isGameOver = false;
+              isGameOver = true;
               stopTimer();
               victory.play();
             }
@@ -392,7 +401,8 @@ function rebuildGameZone() {
   gameField.remove();
   isFirstCellClick = true;
   isGameOver = false;
-  stopTimer();
+  countMoves = 0;
+  stopTimer(true);
   buildFields();
 }
 

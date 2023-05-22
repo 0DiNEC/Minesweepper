@@ -14,6 +14,8 @@ const gameFieldSizeChange = new CustomEvent('gameFieldSizeChange');
 // eslint-disable-next-line import/no-mutable-exports
 export let gameFieldSize;
 let gameFieldSizeIndex;
+// eslint-disable-next-line import/no-mutable-exports
+export let isDark = false;
 
 // main menu
 export function buildMainMenu() {
@@ -63,10 +65,33 @@ export function buildMainMenu() {
 
   mainMenuButtons.appendChild(difficultButton);
 
-  const flagButton = document.createElement('button');
-  flagButton.classList = 'main-menu__new-game main-menu__btn';
-  flagButton.style.backgroundImage = "url('assets/img/flag.png')";
-  mainMenuButtons.appendChild(flagButton);
+  const darkLightButton = document.createElement('button');
+  darkLightButton.classList = 'main-menu__dark-light-mode main-menu__btn';
+  darkLightButton.style.backgroundImage = "url('assets/img/moon.png')";
+  darkLightButton.addEventListener('click', () => {
+    isDark = !isDark;
+    darkLightButton.classList.toggle('night');
+    document.querySelector('body').classList.toggle('body_night');
+    document.querySelector('.main-menu').classList.toggle('main-menu_night');
+    document.querySelector('.game-field__header').classList.toggle('game-field_night');
+    document.querySelector('.game-field__ceils').classList.toggle('game-field_night');
+    document.querySelectorAll('.cell').forEach((cell) => cell.classList.toggle('game-field-cell_night'));
+    document.querySelector('.smile-btn').classList.toggle('smile-btn_night');
+    const topScoreDialog = document.querySelector('.top-score-dialog');
+    if (topScoreDialog)
+      topScoreDialog.classList.toggle('dialog_night');
+    const defeatDialog = document.querySelector('.dialog__defeat');
+    if (defeatDialog)
+      defeatDialog.classList.toggle('dialog_night');
+    const winDialog = document.querySelector('.dialog__win');
+    if (winDialog)
+      winDialog.classList.toggle('dialog_night');
+
+    if (darkLightButton.classList.contains('night'))
+      darkLightButton.style.backgroundImage = "url('assets/img/sun.png')";
+    else darkLightButton.style.backgroundImage = "url('assets/img/moon.png')";
+  });
+  mainMenuButtons.appendChild(darkLightButton);
 
   const bestScopeButton = document.createElement('button');
   bestScopeButton.classList = 'main-menu__best-score main-menu__btn';
@@ -82,6 +107,8 @@ export function buildDefeatMenu() {
 
   const menu = document.createElement('div');
   menu.classList = 'dialog__defeat';
+  if (isDark)
+    menu.classList.add('dialog_night');
 
   const title = document.createElement('h3');
   title.classList = 'dialog_title';
@@ -111,6 +138,8 @@ export function buildWinMenu(time, moves) {
 
   const menu = document.createElement('div');
   menu.classList = 'dialog__win';
+  if (isDark)
+    menu.classList.add('dialog_night');
 
   const title = document.createElement('h3');
   title.classList = 'dialog_title';
@@ -176,6 +205,9 @@ function buildTopScore() {
   if (!document.querySelector('.top-score-dialog')) {
     const dialog = document.createElement('div');
     dialog.classList = 'top-score-dialog';
+
+    if (isDark)
+      dialog.classList.add('dialog_night');
 
     const title = document.createElement('h1');
     title.classList = 'top-score-dialog__title';
