@@ -258,6 +258,7 @@ function cellClick() {
 
       if (mines.includes(cellNum)) {
         buildDefeatMenu();
+        document.querySelector('.smile-btn').style.backgroundImage = `url('${smileStates[2]}')`;
         stopTimer(true);
         drawAllMines();
         soundBlust.pause();
