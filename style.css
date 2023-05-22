@@ -195,3 +195,44 @@ p {
   margin: 10px 0;
   cursor: pointer;
 }
+
+.top-score-dialog {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  top: 10%;
+  left: 24.6%;
+  width: 50vw;
+  height: 90%;
+
+
+  background: #cecece;
+  border: 3px outset #f0f0f0;
+}
+
+.result {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 90%;
+  justify-items: center;
+}
+
+.dialog__close-button {
+  width: 60px;
+  height: 60px;
+  background: none;
+  background-size: cover;
+  border: none;
+
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dialog__close-button:hover {
+  transform: scale(1.2) rotate(90deg);
+}
+
+.result__difficult {
+  height: 20px;
+}
