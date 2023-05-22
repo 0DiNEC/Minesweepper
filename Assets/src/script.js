@@ -46,7 +46,7 @@ function buildFields() {
   smileButton.addEventListener('click', rebuildGameZone);
   sectionInfo.appendChild(smileButton);
 
-  flagToWin = (gameFieldSize * gameFieldSize) / 10;
+  flagToWin = Math.floor((gameFieldSize * gameFieldSize) / 10);
   const countFlags = document.createElement('div');
   countFlags.classList = 'count-flags';
   countFlags.textContent = flagToWin.toString();
@@ -94,9 +94,11 @@ function buildFields() {
             target.style.backgroundPosition = 'center';
             target.style.backgroundSize = 'cover';
             if (flagToWin === 0) {
+              const victory = new Audio('assets/sounds/victory.ogg');
               buildWinMenu(seconds, countMoves);
               isGameOver = false;
               stopTimer();
+              victory.play();
             }
           } else {
             flagsCount++;
@@ -188,9 +190,20 @@ function putMines(cellNum) {
   }
 }
 
+function drawAllMines() {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const iterator of mines) {
+    const cell = cells[iterator];
+    cell.style.background = 'rgba(255, 0, 0, 0.5)';
+    cell.style.backgroundImage = "url('Assets/img/mine.png')";
+    cell.style.backgroundRepeat = 'no-repeat';
+    cell.style.backgroundPosition = 'center';
+    cell.style.backgroundSize = 'cover';
+  }
+}
+
 let intervalID;
 let seconds = 0;
-
 function startTimer() {
   stopTimer();
   intervalID = setInterval(updateTimer, 1000);
@@ -211,6 +224,8 @@ const setActiveCell = (cell) => {
   cell.classList.remove('game-field__cell');
 };
 
+let soundCellClick = new Audio('assets/sounds/cell_click.ogg');
+let soundBlust = new Audio('assets/sounds/blust.ogg');
 function cellClick() {
   if (!isGameOver) {
     const cell = this;
@@ -231,18 +246,14 @@ function cellClick() {
       setActiveCell(cell);
 
       if (mines.includes(cellNum)) {
-        cell.style.backgroundImage = "url('Assets/img/mine.png')";
-        cell.style.backgroundRepeat = 'no-repeat';
-        cell.style.backgroundPosition = 'center';
-        cell.style.backgroundSize = 'cover';
-      }
-
-      if (mines.includes(cellNum)) {
         buildDefeatMenu();
         stopTimer(true);
+        drawAllMines();
+        soundBlust.play();
         isGameOver = true;
         return;
       }
+      soundCellClick.play();
       cellDrawCountBombsAround(cellNum);
     }
   }
