@@ -98,6 +98,11 @@ export function buildMainMenu() {
   bestScopeButton.style.backgroundImage = "url('Assets/img/rewards.png')";
   bestScopeButton.addEventListener('click', buildTopScore);
   mainMenuButtons.appendChild(bestScopeButton);
+
+  const helpButton = document.createElement('button');
+  helpButton.classList = 'main-menu__help main-menu__btn';
+  helpButton.style.backgroundImage = "url('Assets/img/question.png')";
+  mainMenuButtons.appendChild(helpButton);
 }
 
 // Defeat menu

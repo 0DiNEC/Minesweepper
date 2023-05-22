@@ -268,3 +268,16 @@ body {
   background: #686868;
   color: #000000;
 }
+
+.show-bomb {
+  animation-name: showBomb;
+  animation-duration: 1s;
+  animation-timing-function: ease;
+  animation-delay: 0s;
+}
+
+@keyframes showBomb {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); background: red; }
+  100% { transform: scale(1); }
+}

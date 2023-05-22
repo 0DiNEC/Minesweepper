@@ -417,8 +417,30 @@ document.addEventListener('contextmenu', (event) => {
   event.preventDefault();
 });
 
+function showOneMine() {
+  if (!isFirstCellClick && !isGameOver) {
+    for (let i = 0; i < cells.length; i++) {
+      const cell = cells[i];
+      if (!cell.classList.contains('flag')) {
+        const cellNum = parseInt(cell.classList[1], 10);
+        if (mines.includes(cellNum)) {
+          cell.classList.remove('show-bomb');
+          // eslint-disable-next-line no-void
+          void cell.offsetWidth;
+          cell.classList.add('show-bomb');
+          seconds += 20;
+          countMoves += 5;
+          document.querySelector('.moves').textContent = countMoves.toString();
+          return;
+        }
+      }
+    }
+  }
+}
+
 function main() {
   buildMainMenu();
   buildFields();
+  document.querySelector('.main-menu__help').addEventListener('click', () => { showOneMine(); });
 }
 main();
