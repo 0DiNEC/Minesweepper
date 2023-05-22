@@ -172,7 +172,7 @@ function putMines(cellNum) {
     else mines.push(cell);
   }
   // eslint-disable-next-line no-console
-  console.log(mines);
+  console.log('for check location of mines\n', mines);
 
   // fill all cells with count bombs around
   for (let i = 0, cell_i = 0; i < gameFieldSize; i++) {
