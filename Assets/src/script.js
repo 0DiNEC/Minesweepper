@@ -251,7 +251,9 @@ function cellClick() {
         buildDefeatMenu();
         stopTimer(true);
         drawAllMines();
-        soundBlust.play();
+        soundBlust.pause();
+        soundBlust.currentTime = 0;
+        if (soundBlust.paused) soundBlust.play();
         isGameOver = true;
         return;
       }
