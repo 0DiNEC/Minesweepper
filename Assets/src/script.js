@@ -131,12 +131,13 @@ function buildFields() {
     });
     // eslint-disable-next-line no-loop-func
     cell.addEventListener('mouseup', () => {
-      smileButton.style.backgroundImage = `url('${smileStates[0]}')`;
+      if (!isGameOver)
+        smileButton.style.backgroundImage = `url('${smileStates[0]}')`;
       isMouseDown = false;
     });
     // eslint-disable-next-line no-loop-func
     cell.addEventListener('mouseleave', () => {
-      if (isMouseDown) {
+      if (isMouseDown && !isGameOver) {
         smileButton.style.backgroundImage = `url('${smileStates[0]}')`;
         isMouseDown = false;
       }
