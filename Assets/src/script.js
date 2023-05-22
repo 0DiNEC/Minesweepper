@@ -63,9 +63,15 @@ function buildFields() {
   headerItems.appendChild(timer);
 
   let size;
-  if (gameFieldSize === gameMode.easyMode) size = 3.2;
+  if (gameFieldSize === gameMode.easyMode) size = 3;
   else if (gameFieldSize === gameMode.normalMode) size = 2;
-  else size = 1.07;
+  else size = 1.1;
+  const screenWidth = window.innerWidth;
+  if (screenWidth > 900) {
+    if (gameFieldSize === gameMode.easyMode) size = 4;
+    else if (gameFieldSize === gameMode.normalMode) size = 2.5;
+    else size = 1.5;
+  }
 
   const ceils = document.createElement('div');
   ceils.classList = 'game-field__ceils';
@@ -437,6 +443,25 @@ function showOneMine() {
     }
   }
 }
+
+window.addEventListener('resize', () => {
+  if (gameFieldSize) {
+    let size;
+    if (gameFieldSize === gameMode.easyMode) size = 3;
+    else if (gameFieldSize === gameMode.normalMode) size = 2;
+    else size = 1.1;
+    const screenWidth = window.innerWidth;
+    if (screenWidth > 900) {
+      if (gameFieldSize === gameMode.easyMode) size = 4;
+      else if (gameFieldSize === gameMode.normalMode) size = 2.5;
+      else size = 1.5;
+    }
+    const ceils = document.querySelector('.game-field__ceils');
+    ceils.style.transition = 'grid-template-columns 0.3s ease, grid-auto-rows 0.3s ease';
+    ceils.style.gridTemplateColumns = `repeat(${gameFieldSize}, ${size}rem)`;
+    ceils.style.gridAutoRows = `${size}rem`;
+  }
+});
 
 function main() {
   buildMainMenu();

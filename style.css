@@ -138,7 +138,6 @@ body {
   display: flex;
   align-items: center;
   height: 50px;
-  width: 99.5%;
   margin: 0 auto;
 
   border: 3px outset #f0f0f0;
@@ -153,7 +152,6 @@ body {
 
 .main-menu__buttons {
   display: flex;
-  width: 20%;
   justify-content: space-evenly;
 }
 
@@ -164,6 +162,7 @@ body {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 30px;
+  margin: 0 10px;
   cursor: pointer;
   transition: 0.3s ease;
 }
