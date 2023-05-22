@@ -4,6 +4,7 @@ import {
   gameMode,
   buildDefeatMenu,
   buildWinMenu,
+  saveTempResult
 } from './menu.js';
 
 let countMoves = 0;
@@ -96,6 +97,7 @@ function buildFields() {
             if (flagToWin === 0) {
               const victory = new Audio('assets/sounds/victory.ogg');
               buildWinMenu(seconds, countMoves);
+              saveTempResult(seconds, countMoves);
               isGameOver = false;
               stopTimer();
               victory.play();
@@ -224,8 +226,8 @@ const setActiveCell = (cell) => {
   cell.classList.remove('game-field__cell');
 };
 
-let soundCellClick = new Audio('assets/sounds/cell_click.ogg');
-let soundBlust = new Audio('assets/sounds/blust.ogg');
+const soundCellClick = new Audio('assets/sounds/cell_click.ogg');
+const soundBlust = new Audio('assets/sounds/blust.ogg');
 function cellClick() {
   if (!isGameOver) {
     const cell = this;
