@@ -5,9 +5,9 @@ export const gameMode = {
 };
 
 const gameModeImg = [
-  'assets/img/easy.png',
-  'assets/img/normal.png',
-  'assets/img/hard.png',
+  'Assets/img/easy.png',
+  'Assets/img/normal.png',
+  'Assets/img/hard.png',
 ];
 
 const gameFieldSizeChange = new CustomEvent('gameFieldSizeChange');
@@ -67,7 +67,7 @@ export function buildMainMenu() {
 
   const darkLightButton = document.createElement('button');
   darkLightButton.classList = 'main-menu__dark-light-mode main-menu__btn';
-  darkLightButton.style.backgroundImage = "url('assets/img/moon.png')";
+  darkLightButton.style.backgroundImage = "url('Assets/img/moon.png')";
   darkLightButton.addEventListener('click', () => {
     isDark = !isDark;
     darkLightButton.classList.toggle('night');
@@ -88,14 +88,14 @@ export function buildMainMenu() {
       winDialog.classList.toggle('dialog_night');
 
     if (darkLightButton.classList.contains('night'))
-      darkLightButton.style.backgroundImage = "url('assets/img/sun.png')";
-    else darkLightButton.style.backgroundImage = "url('assets/img/moon.png')";
+      darkLightButton.style.backgroundImage = "url('Assets/img/sun.png')";
+    else darkLightButton.style.backgroundImage = "url('Assets/img/moon.png')";
   });
   mainMenuButtons.appendChild(darkLightButton);
 
   const bestScopeButton = document.createElement('button');
   bestScopeButton.classList = 'main-menu__best-score main-menu__btn';
-  bestScopeButton.style.backgroundImage = "url('assets/img/rewards.png')";
+  bestScopeButton.style.backgroundImage = "url('Assets/img/rewards.png')";
   bestScopeButton.addEventListener('click', buildTopScore);
   mainMenuButtons.appendChild(bestScopeButton);
 }
@@ -174,9 +174,9 @@ export function saveTempResult(time, movesCount) {
   tempResults.time.push(time);
 
   const sortOrder = [
-    'assets/img/hard.png',
-    'assets/img/normal.png',
-    'assets/img/easy.png',
+    'Assets/img/hard.png',
+    'Assets/img/normal.png',
+    'Assets/img/easy.png',
   ];
   const sortedResults = tempResults.difficult
     .map((difficultt, index) => ({

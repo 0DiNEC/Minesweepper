@@ -104,7 +104,7 @@ function buildFields() {
             target.style.backgroundPosition = 'center';
             target.style.backgroundSize = 'cover';
             if (flagToWin === 0) {
-              const victory = new Audio('assets/sounds/victory.ogg');
+              const victory = new Audio('Assets/sounds/victory.ogg');
               buildWinMenu(seconds, countMoves);
               saveTempResult(seconds, countMoves);
               isGameOver = true;
@@ -235,8 +235,8 @@ const setActiveCell = (cell) => {
   cell.classList.remove('game-field__cell');
 };
 
-const soundCellClick = new Audio('assets/sounds/cell_click.ogg');
-const soundBlust = new Audio('assets/sounds/blust.ogg');
+const soundCellClick = new Audio('Assets/sounds/cell_click.ogg');
+const soundBlust = new Audio('Assets/sounds/blust.ogg');
 function cellClick() {
   if (!isGameOver) {
     const cell = this;
